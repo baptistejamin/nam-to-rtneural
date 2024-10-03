@@ -1,0 +1,20 @@
+{
+    "model": "SimpleRNN",
+    "file_name": "amp",
+    "blip_locations": [
+        12000,
+        36000
+    ],
+    "blip_offset": 0,
+    "blip_window": 48000,
+    "hidden_size": 16,
+    "unit_type": "LSTM",
+    "loss_fcns": {
+        "ESR": 0.75,
+        "DC": 0.25
+    },
+    "pre_filt": "A-Weighting",
+    "device": "MOD-DWARF",
+    "samplerate": 48000,
+    "author": "AIDA DSP"
+}
