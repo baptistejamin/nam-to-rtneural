@@ -64,16 +64,45 @@ int main(int argc, char* argv[])
 
 	std::vector<double> inputBuffer(AUDIO_BUFFER_SIZE);
 	std::vector<double> outputBuffer(AUDIO_BUFFER_SIZE);
+	std::vector<double> normalizedBuffer(AUDIO_BUFFER_SIZE);
+
+	// Calculate the scaling factor for -6dB normalization
+	const double targetLevel = std::pow(10, -6.0 / 20.0);
+	double maxAmplitude = 0.0;
 
 	std::cout << "Processing audio...\n";
 	sf_count_t readCount;
+	
+	// First pass: find maximum amplitude
+	while ((readCount = sf_read_double(infile, inputBuffer.data(), AUDIO_BUFFER_SIZE)) > 0)
+	{
+		model->process(inputBuffer.data(), outputBuffer.data(), readCount);
+		for (sf_count_t i = 0; i < readCount; ++i)
+		{
+			maxAmplitude = std::max(maxAmplitude, std::abs(outputBuffer[i]));
+		}
+	}
+
+	// Calculate scaling factor
+	double scalingFactor = targetLevel / maxAmplitude;
+
+	// Reset file position to the beginning
+	sf_seek(infile, 0, SEEK_SET);
+
+	// Second pass: process and normalize
 	while ((readCount = sf_read_double(infile, inputBuffer.data(), AUDIO_BUFFER_SIZE)) > 0)
 	{
 		// Process the audio
 		model->process(inputBuffer.data(), outputBuffer.data(), readCount);
 
-		// Write processed audio to output file
-		sf_write_double(outfile, outputBuffer.data(), readCount);
+		// Normalize the output
+		for (sf_count_t i = 0; i < readCount; ++i)
+		{
+			normalizedBuffer[i] = outputBuffer[i] * scalingFactor;
+		}
+
+		// Write normalized audio to output file
+		sf_write_double(outfile, normalizedBuffer.data(), readCount);
 	}
 
 	std::cout << "Processing complete.\n";
