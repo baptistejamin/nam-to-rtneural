@@ -1,3 +1,5 @@
+
+
 # NAM to Aida-X Converter
 
 This project provides a tool to convert Neural Amp Modeler (NAM) models to Aida-X compatible models using RTNeural.
@@ -41,6 +43,6 @@ sudo apt-get install libsndfile1-dev
 brew install libsndfile
 ```
 
-3. Download a nam file a place it in `res/0.nam`
+3. Download a NAM file and place it in `res/0.nam`
 
 4. Execute `sh nam_to_aida.sh`
